@@ -19,7 +19,7 @@ along with this program. If not, see <http://www.gnu.org/licenses/>.
 
 */
 
-// $Revision: 6706 $ $Date:: 2017-04-21 #$ $Author: serge $
+// $Revision: 8523 $ $Date:: 2018-01-17 #$ $Author: serge $
 
 #ifndef GENERIC_HANDLER_HANDLER_H
 #define GENERIC_HANDLER_HANDLER_H
@@ -57,6 +57,7 @@ private:
     generic_protocol::BackwardMessage* handle_AuthenticateAltRequest( const generic_protocol::ForwardMessage * r );
     generic_protocol::BackwardMessage* handle_CloseSessionRequest( const generic_protocol::ForwardMessage * r );
     generic_protocol::BackwardMessage* handle_GetUserIdRequest( const generic_protocol::ForwardMessage * r );
+    generic_protocol::BackwardMessage* handle_GetSessionInfoRequest( const generic_protocol::ForwardMessage * r );
 
 private:
     mutable std::mutex          mutex_;

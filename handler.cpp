@@ -19,7 +19,7 @@ along with this program. If not, see <http://www.gnu.org/licenses/>.
 
 */
 
-// $Revision: 6695 $ $Date:: 2017-04-21 #$ $Author: serge $
+// $Revision: 8527 $ $Date:: 2018-01-17 #$ $Author: serge $
 
 #include "handler.h"                // self
 
@@ -29,6 +29,7 @@ along with this program. If not, see <http://www.gnu.org/licenses/>.
 #include "utils/mutex_helper.h"      // MUTEX_SCOPE_LOCK
 #include "utils/dummy_logger.h"      // dummy_log
 #include "utils/assert.h"            // ASSERT
+#include "utils/chrono_epoch.h"     // utils::to_epoch
 
 #include "generic_protocol/response_gen.h"              // generic_protocol::create_error_response
 
@@ -73,6 +74,7 @@ generic_protocol::BackwardMessage* Handler::handle( const generic_protocol::Forw
         { typeid( generic_protocol::AuthenticateAltRequest ),   & Type::handle_AuthenticateAltRequest },
         { typeid( generic_protocol::CloseSessionRequest ),      & Type::handle_CloseSessionRequest },
         { typeid( generic_protocol::GetUserIdRequest ),         & Type::handle_GetUserIdRequest },
+        { typeid( generic_protocol::GetSessionInfoRequest ),    & Type::handle_GetSessionInfoRequest },
     };
 
     auto it = funcs.find( typeid( * req ) );
@@ -151,6 +153,24 @@ generic_protocol::BackwardMessage* Handler::handle_GetUserIdRequest( const gener
             return generic_protocol::create_get_user_id_response( id );
 
         return generic_protocol::create_error_response( generic_protocol::ErrorResponse::NOT_PERMITTED, "no rights to get user ID of another user" );
+    }
+
+    return generic_protocol::create_error_response( generic_protocol::ErrorResponse::AUTHENTICATION_ERROR, "invalid session id or session id has already expired" );
+}
+
+generic_protocol::BackwardMessage* Handler::handle_GetSessionInfoRequest( const generic_protocol::ForwardMessage * rr )
+{
+    auto & r = dynamic_cast< const generic_protocol::GetSessionInfoRequest &>( * rr );
+
+    session_manager::Manager::SessionInfo si;
+
+    if( sess_man_->get_session_info( & si, r.id ) )
+    {
+        generic_protocol::SessionInfo g_si;
+
+        generic_protocol::init( & g_si, si.user_id, utils::to_epoch( si.start_time ), utils::to_epoch( si.expiration_time ) );
+
+        return generic_protocol::create_GetSessionInfoResponse( g_si );
     }
 
     return generic_protocol::create_error_response( generic_protocol::ErrorResponse::AUTHENTICATION_ERROR, "invalid session id or session id has already expired" );

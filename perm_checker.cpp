@@ -19,7 +19,7 @@ along with this program. If not, see <http://www.gnu.org/licenses/>.
 
 */
 
-// $Revision: 6711 $ $Date:: 2017-04-21 #$ $Author: serge $
+// $Revision: 8524 $ $Date:: 2018-01-17 #$ $Author: serge $
 
 #include "perm_checker.h"               // self
 
@@ -66,6 +66,7 @@ bool PermChecker::is_allowed( const generic_protocol::ForwardMessage * req )
         { typeid( generic_protocol::AuthenticateAltRequest ),   & Type::is_allowed_AuthenticateAltRequest },
         { typeid( generic_protocol::CloseSessionRequest ),      & Type::is_allowed_CloseSessionRequest },
         { typeid( generic_protocol::GetUserIdRequest ),         & Type::is_allowed_GetUserIdRequest },
+        { typeid( generic_protocol::GetSessionInfoRequest ),    & Type::is_allowed_GetSessionInfoRequest },
     };
 
     auto it = funcs.find( typeid( * req ) );
@@ -76,7 +77,7 @@ bool PermChecker::is_allowed( const generic_protocol::ForwardMessage * req )
 
         ASSERT( 0 );
 
-        return nullptr;
+        return false;
     }
 
     return (this->*it->second)( req );
@@ -102,5 +103,14 @@ bool PermChecker::is_allowed_GetUserIdRequest( const generic_protocol::ForwardMe
     return true;
 }
 
+bool PermChecker::is_allowed_GetSessionInfoRequest( const generic_protocol::ForwardMessage * rr )
+{
+    auto & r = dynamic_cast< const generic_protocol::GetSessionInfoRequest &>( * rr );
+
+    if( r.session_id == r.id )
+        return true;
+
+    return false;
+}
 
 } // namespace generic_handler

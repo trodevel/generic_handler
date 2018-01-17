@@ -19,7 +19,7 @@ along with this program. If not, see <http://www.gnu.org/licenses/>.
 
 */
 
-// $Revision: 6718 $ $Date:: 2017-04-21 #$ $Author: serge $
+// $Revision: 8522 $ $Date:: 2018-01-17 #$ $Author: serge $
 
 #ifndef GENERIC_HANDLER_PERM_CHECKER_H
 #define GENERIC_HANDLER_PERM_CHECKER_H
@@ -54,6 +54,7 @@ private:
     bool is_allowed_AuthenticateAltRequest( const generic_protocol::ForwardMessage * r );
     bool is_allowed_CloseSessionRequest( const generic_protocol::ForwardMessage * r );
     bool is_allowed_GetUserIdRequest( const generic_protocol::ForwardMessage * r );
+    bool is_allowed_GetSessionInfoRequest( const generic_protocol::ForwardMessage * r );
 
 private:
     session_manager::Manager            * sess_man_;
