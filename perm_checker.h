@@ -19,10 +19,12 @@ along with this program. If not, see <http://www.gnu.org/licenses/>.
 
 */
 
-// $Revision: 8522 $ $Date:: 2018-01-17 #$ $Author: serge $
+// $Revision: 8861 $ $Date:: 2018-03-28 #$ $Author: serge $
 
 #ifndef GENERIC_HANDLER_PERM_CHECKER_H
 #define GENERIC_HANDLER_PERM_CHECKER_H
+
+#include "session_manager/types.h"      // session_manager::user_id_t
 
 namespace generic_protocol
 {
@@ -47,14 +49,15 @@ public:
     bool init(
             session_manager::Manager            * sess_man );
 
-    bool is_allowed( const generic_protocol::ForwardMessage * r );
+    bool is_authenticated( session_manager::user_id_t * session_user_id, const generic_protocol::ForwardMessage * r );
+    bool is_allowed( session_manager::user_id_t session_user_id, const generic_protocol::ForwardMessage * r );
 
 private:
-    bool is_allowed_AuthenticateRequest( const generic_protocol::ForwardMessage * r );
-    bool is_allowed_AuthenticateAltRequest( const generic_protocol::ForwardMessage * r );
-    bool is_allowed_CloseSessionRequest( const generic_protocol::ForwardMessage * r );
-    bool is_allowed_GetUserIdRequest( const generic_protocol::ForwardMessage * r );
-    bool is_allowed_GetSessionInfoRequest( const generic_protocol::ForwardMessage * r );
+    bool is_allowed_AuthenticateRequest( session_manager::user_id_t session_user_id, const generic_protocol::ForwardMessage * r );
+    bool is_allowed_AuthenticateAltRequest( session_manager::user_id_t session_user_id, const generic_protocol::ForwardMessage * r );
+    bool is_allowed_CloseSessionRequest( session_manager::user_id_t session_user_id, const generic_protocol::ForwardMessage * r );
+    bool is_allowed_GetUserIdRequest( session_manager::user_id_t session_user_id, const generic_protocol::ForwardMessage * r );
+    bool is_allowed_GetSessionInfoRequest( session_manager::user_id_t session_user_id, const generic_protocol::ForwardMessage * r );
 
 private:
     session_manager::Manager            * sess_man_;

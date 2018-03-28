@@ -19,7 +19,7 @@ along with this program. If not, see <http://www.gnu.org/licenses/>.
 
 */
 
-// $Revision: 8524 $ $Date:: 2018-01-17 #$ $Author: serge $
+// $Revision: 8866 $ $Date:: 2018-03-28 #$ $Author: serge $
 
 #include "perm_checker.h"               // self
 
@@ -53,12 +53,38 @@ bool PermChecker::init(
     return true;
 }
 
+bool PermChecker::is_authenticated( session_manager::user_id_t * session_user_id, const generic_protocol::ForwardMessage * req )
+{
+    static const std::set<std::type_index> non_request_based =
+    {
+        typeid( generic_protocol::AuthenticateRequest ),
+        typeid( generic_protocol::AuthenticateAltRequest ),
+        typeid( generic_protocol::CloseSessionRequest ),
+    };
 
-bool PermChecker::is_allowed( const generic_protocol::ForwardMessage * req )
+    if( non_request_based.count( typeid( * req ) ) )
+    {
+        * session_user_id   = 0;
+
+        return true;    // actual authentication will happen later
+    }
+
+    auto * r = dynamic_cast< const generic_protocol::Request *>( req );
+
+    if( r == nullptr )
+        return false;   // return false, if it is not Request-based message
+
+    if( sess_man_->get_user_id( session_user_id, r->session_id ) )
+        return true;
+
+    return false;
+}
+
+bool PermChecker::is_allowed( session_manager::user_id_t session_user_id, const generic_protocol::ForwardMessage * req )
 {
     typedef PermChecker Type;
 
-    typedef bool (Type::*PPMF)( const generic_protocol::ForwardMessage * rr );
+    typedef bool (Type::*PPMF)( session_manager::user_id_t session_user_id, const generic_protocol::ForwardMessage * rr );
 
     static const std::unordered_map<std::type_index, PPMF> funcs =
     {
@@ -80,30 +106,30 @@ bool PermChecker::is_allowed( const generic_protocol::ForwardMessage * req )
         return false;
     }
 
-    return (this->*it->second)( req );
+    return (this->*it->second)( session_user_id, req );
 }
 
-bool PermChecker::is_allowed_AuthenticateRequest( const generic_protocol::ForwardMessage * rr )
+bool PermChecker::is_allowed_AuthenticateRequest( session_manager::user_id_t session_user_id, const generic_protocol::ForwardMessage * rr )
 {
     return true;
 }
 
-bool PermChecker::is_allowed_AuthenticateAltRequest( const generic_protocol::ForwardMessage * rr )
+bool PermChecker::is_allowed_AuthenticateAltRequest( session_manager::user_id_t session_user_id, const generic_protocol::ForwardMessage * rr )
 {
     return true;
 }
 
-bool PermChecker::is_allowed_CloseSessionRequest( const generic_protocol::ForwardMessage * rr )
+bool PermChecker::is_allowed_CloseSessionRequest( session_manager::user_id_t session_user_id, const generic_protocol::ForwardMessage * rr )
 {
     return true;
 }
 
-bool PermChecker::is_allowed_GetUserIdRequest( const generic_protocol::ForwardMessage * rr )
+bool PermChecker::is_allowed_GetUserIdRequest( session_manager::user_id_t session_user_id, const generic_protocol::ForwardMessage * rr )
 {
     return true;
 }
 
-bool PermChecker::is_allowed_GetSessionInfoRequest( const generic_protocol::ForwardMessage * rr )
+bool PermChecker::is_allowed_GetSessionInfoRequest( session_manager::user_id_t session_user_id, const generic_protocol::ForwardMessage * rr )
 {
     auto & r = dynamic_cast< const generic_protocol::GetSessionInfoRequest &>( * rr );
 

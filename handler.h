@@ -19,12 +19,14 @@ along with this program. If not, see <http://www.gnu.org/licenses/>.
 
 */
 
-// $Revision: 8523 $ $Date:: 2018-01-17 #$ $Author: serge $
+// $Revision: 8863 $ $Date:: 2018-03-28 #$ $Author: serge $
 
 #ifndef GENERIC_HANDLER_HANDLER_H
 #define GENERIC_HANDLER_HANDLER_H
 
 #include <mutex>                    // std::mutex
+
+#include "session_manager/types.h"      // session_manager::user_id_t
 
 namespace generic_protocol
 {
@@ -49,15 +51,15 @@ public:
     bool init(
             session_manager::Manager    * sess_man );
 
-    generic_protocol::BackwardMessage* handle( const generic_protocol::ForwardMessage * r );
+    generic_protocol::BackwardMessage* handle( session_manager::user_id_t session_user_id, const generic_protocol::ForwardMessage * r );
 
 private:
 
-    generic_protocol::BackwardMessage* handle_AuthenticateRequest( const generic_protocol::ForwardMessage * r );
-    generic_protocol::BackwardMessage* handle_AuthenticateAltRequest( const generic_protocol::ForwardMessage * r );
-    generic_protocol::BackwardMessage* handle_CloseSessionRequest( const generic_protocol::ForwardMessage * r );
-    generic_protocol::BackwardMessage* handle_GetUserIdRequest( const generic_protocol::ForwardMessage * r );
-    generic_protocol::BackwardMessage* handle_GetSessionInfoRequest( const generic_protocol::ForwardMessage * r );
+    generic_protocol::BackwardMessage* handle_AuthenticateRequest( session_manager::user_id_t session_user_id, const generic_protocol::ForwardMessage * r );
+    generic_protocol::BackwardMessage* handle_AuthenticateAltRequest( session_manager::user_id_t session_user_id, const generic_protocol::ForwardMessage * r );
+    generic_protocol::BackwardMessage* handle_CloseSessionRequest( session_manager::user_id_t session_user_id, const generic_protocol::ForwardMessage * r );
+    generic_protocol::BackwardMessage* handle_GetUserIdRequest( session_manager::user_id_t session_user_id, const generic_protocol::ForwardMessage * r );
+    generic_protocol::BackwardMessage* handle_GetSessionInfoRequest( session_manager::user_id_t session_user_id, const generic_protocol::ForwardMessage * r );
 
 private:
     mutable std::mutex          mutex_;

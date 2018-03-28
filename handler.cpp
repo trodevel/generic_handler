@@ -19,7 +19,7 @@ along with this program. If not, see <http://www.gnu.org/licenses/>.
 
 */
 
-// $Revision: 8527 $ $Date:: 2018-01-17 #$ $Author: serge $
+// $Revision: 8867 $ $Date:: 2018-03-28 #$ $Author: serge $
 
 #include "handler.h"                // self
 
@@ -60,13 +60,13 @@ bool Handler::init(
 }
 
 
-generic_protocol::BackwardMessage* Handler::handle( const generic_protocol::ForwardMessage * req )
+generic_protocol::BackwardMessage* Handler::handle( session_manager::user_id_t session_user_id, const generic_protocol::ForwardMessage * req )
 {
     MUTEX_SCOPE_LOCK( mutex_ );
 
     typedef Handler Type;
 
-    typedef generic_protocol::BackwardMessage* (Type::*PPMF)( const generic_protocol::ForwardMessage * r );
+    typedef generic_protocol::BackwardMessage* (Type::*PPMF)( session_manager::user_id_t session_user_id, const generic_protocol::ForwardMessage * r );
 
     static const std::unordered_map<std::type_index, PPMF> funcs =
     {
@@ -88,10 +88,10 @@ generic_protocol::BackwardMessage* Handler::handle( const generic_protocol::Forw
         return nullptr;
     }
 
-    return (this->*it->second)( req );
+    return (this->*it->second)( session_user_id, req );
 }
 
-generic_protocol::BackwardMessage* Handler::handle_AuthenticateRequest( const generic_protocol::ForwardMessage * rr )
+generic_protocol::BackwardMessage* Handler::handle_AuthenticateRequest( session_manager::user_id_t /*session_user_id*/, const generic_protocol::ForwardMessage * rr )
 {
     auto & r = dynamic_cast< const generic_protocol::AuthenticateRequest &>( * rr );
 
@@ -110,7 +110,7 @@ generic_protocol::BackwardMessage* Handler::handle_AuthenticateRequest( const ge
     return generic_protocol::create_error_response( generic_protocol::ErrorResponse::AUTHENTICATION_ERROR, error );
 }
 
-generic_protocol::BackwardMessage* Handler::handle_AuthenticateAltRequest( const generic_protocol::ForwardMessage * rr )
+generic_protocol::BackwardMessage* Handler::handle_AuthenticateAltRequest( session_manager::user_id_t /*session_user_id*/, const generic_protocol::ForwardMessage * rr )
 {
     auto & r = dynamic_cast< const generic_protocol::AuthenticateAltRequest &>( * rr );
 
@@ -125,7 +125,7 @@ generic_protocol::BackwardMessage* Handler::handle_AuthenticateAltRequest( const
     return generic_protocol::create_error_response( generic_protocol::ErrorResponse::AUTHENTICATION_ERROR, error );
 }
 
-generic_protocol::BackwardMessage* Handler::handle_CloseSessionRequest( const generic_protocol::ForwardMessage * rr )
+generic_protocol::BackwardMessage* Handler::handle_CloseSessionRequest( session_manager::user_id_t /*session_user_id*/, const generic_protocol::ForwardMessage * rr )
 {
     auto & r = dynamic_cast< const generic_protocol::CloseSessionRequest &>( * rr );
 
@@ -139,26 +139,19 @@ generic_protocol::BackwardMessage* Handler::handle_CloseSessionRequest( const ge
     return generic_protocol::create_error_response( generic_protocol::ErrorResponse::RUNTIME_ERROR, error );
 }
 
-generic_protocol::BackwardMessage* Handler::handle_GetUserIdRequest( const generic_protocol::ForwardMessage * rr )
+generic_protocol::BackwardMessage* Handler::handle_GetUserIdRequest( session_manager::user_id_t session_user_id, const generic_protocol::ForwardMessage * rr )
 {
     auto & r = dynamic_cast< const generic_protocol::GetUserIdRequest &>( * rr );
 
     uint32_t id = password_hasher::convert_login_to_id( r.user_login );
 
-    uint32_t auth_id;
+    if( id == session_user_id )
+        return generic_protocol::create_get_user_id_response( id );
 
-    if( sess_man_->get_user_id( & auth_id, r.session_id ) )
-    {
-        if( id == auth_id )
-            return generic_protocol::create_get_user_id_response( id );
-
-        return generic_protocol::create_error_response( generic_protocol::ErrorResponse::NOT_PERMITTED, "no rights to get user ID of another user" );
-    }
-
-    return generic_protocol::create_error_response( generic_protocol::ErrorResponse::AUTHENTICATION_ERROR, "invalid session id or session id has already expired" );
+    return generic_protocol::create_error_response( generic_protocol::ErrorResponse::NOT_PERMITTED, "no rights to get user ID of another user" );
 }
 
-generic_protocol::BackwardMessage* Handler::handle_GetSessionInfoRequest( const generic_protocol::ForwardMessage * rr )
+generic_protocol::BackwardMessage* Handler::handle_GetSessionInfoRequest( session_manager::user_id_t session_user_id, const generic_protocol::ForwardMessage * rr )
 {
     auto & r = dynamic_cast< const generic_protocol::GetSessionInfoRequest &>( * rr );
 
