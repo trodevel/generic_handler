@@ -19,7 +19,7 @@ along with this program. If not, see <http://www.gnu.org/licenses/>.
 
 */
 
-// $Revision: 8867 $ $Date:: 2018-03-28 #$ $Author: serge $
+// $Revision: 9299 $ $Date:: 2018-06-05 #$ $Author: serge $
 
 #include "handler.h"                // self
 
@@ -68,14 +68,18 @@ generic_protocol::BackwardMessage* Handler::handle( session_manager::user_id_t s
 
     typedef generic_protocol::BackwardMessage* (Type::*PPMF)( session_manager::user_id_t session_user_id, const generic_protocol::ForwardMessage * r );
 
+#define HANDLER_MAP_ENTRY(_v)       { typeid( generic_protocol::_v ),        & Type::handle_##_v }
+
     static const std::unordered_map<std::type_index, PPMF> funcs =
     {
-        { typeid( generic_protocol::AuthenticateRequest ),      & Type::handle_AuthenticateRequest },
-        { typeid( generic_protocol::AuthenticateAltRequest ),   & Type::handle_AuthenticateAltRequest },
-        { typeid( generic_protocol::CloseSessionRequest ),      & Type::handle_CloseSessionRequest },
-        { typeid( generic_protocol::GetUserIdRequest ),         & Type::handle_GetUserIdRequest },
-        { typeid( generic_protocol::GetSessionInfoRequest ),    & Type::handle_GetSessionInfoRequest },
+        HANDLER_MAP_ENTRY( AuthenticateRequest ),
+        HANDLER_MAP_ENTRY( AuthenticateAltRequest ),
+        HANDLER_MAP_ENTRY( CloseSessionRequest ),
+        HANDLER_MAP_ENTRY( GetUserIdRequest ),
+        HANDLER_MAP_ENTRY( GetSessionInfoRequest ),
     };
+
+#undef HANDLER_MAP_ENTRY
 
     auto it = funcs.find( typeid( * req ) );
 
@@ -95,7 +99,7 @@ generic_protocol::BackwardMessage* Handler::handle_AuthenticateRequest( session_
 {
     auto & r = dynamic_cast< const generic_protocol::AuthenticateRequest &>( * rr );
 
-    uint32_t id = password_hasher::convert_login_to_id( r.user_login );
+    uint32_t id = password_hasher::convert_login_to_id( r.user_login, false );
 
     dummy_log_debug( MODULENAME, "handle: AuthenticateRequest: login %s, hash %u", r.user_login.c_str(), id );
 
@@ -143,7 +147,7 @@ generic_protocol::BackwardMessage* Handler::handle_GetUserIdRequest( session_man
 {
     auto & r = dynamic_cast< const generic_protocol::GetUserIdRequest &>( * rr );
 
-    uint32_t id = password_hasher::convert_login_to_id( r.user_login );
+    uint32_t id = password_hasher::convert_login_to_id( r.user_login, false );
 
     if( id == session_user_id )
         return generic_protocol::create_get_user_id_response( id );
