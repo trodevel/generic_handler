@@ -19,7 +19,7 @@ along with this program. If not, see <http://www.gnu.org/licenses/>.
 
 */
 
-// $Revision: 9299 $ $Date:: 2018-06-05 #$ $Author: serge $
+// $Revision: 10606 $ $Date:: 2019-03-10 #$ $Author: serge $
 
 #include "handler.h"                // self
 
@@ -28,7 +28,7 @@ along with this program. If not, see <http://www.gnu.org/licenses/>.
 
 #include "utils/mutex_helper.h"      // MUTEX_SCOPE_LOCK
 #include "utils/dummy_logger.h"      // dummy_log
-#include "utils/assert.h"            // ASSERT
+#include "utils/utils_assert.h"      // ASSERT
 #include "utils/chrono_epoch.h"     // utils::to_epoch
 
 #include "generic_protocol/response_gen.h"              // generic_protocol::create_error_response
