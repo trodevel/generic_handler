@@ -19,7 +19,7 @@ along with this program. If not, see <http://www.gnu.org/licenses/>.
 
 */
 
-// $Revision: 8861 $ $Date:: 2018-03-28 #$ $Author: serge $
+// $Revision: 8877 $ $Date:: 2018-03-29 #$ $Author: serge $
 
 #ifndef GENERIC_HANDLER_PERM_CHECKER_H
 #define GENERIC_HANDLER_PERM_CHECKER_H
