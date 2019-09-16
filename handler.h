@@ -19,7 +19,7 @@ along with this program. If not, see <http://www.gnu.org/licenses/>.
 
 */
 
-// $Revision: 8877 $ $Date:: 2018-03-29 #$ $Author: serge $
+// $Revision: 12003 $ $Date:: 2019-09-16 #$ $Author: serge $
 
 #ifndef GENERIC_HANDLER_HANDLER_H
 #define GENERIC_HANDLER_HANDLER_H
@@ -27,6 +27,7 @@ along with this program. If not, see <http://www.gnu.org/licenses/>.
 #include <mutex>                    // std::mutex
 
 #include "session_manager/types.h"      // session_manager::user_id_t
+#include "user_manager/i_id_converter.h"    // user_manager::IIdConverter
 
 namespace generic_protocol
 {
@@ -49,7 +50,8 @@ public:
     Handler();
 
     bool init(
-            session_manager::Manager    * sess_man );
+            session_manager::Manager    * sess_man,
+            user_manager::IIdConverter  * user_man );
 
     generic_protocol::BackwardMessage* handle( session_manager::user_id_t session_user_id, const generic_protocol::ForwardMessage * r );
 
@@ -65,6 +67,7 @@ private:
     mutable std::mutex          mutex_;
 
     session_manager::Manager    * sess_man_;
+    user_manager::IIdConverter  * user_man_;
 };
 
 } // namespace generic_handler

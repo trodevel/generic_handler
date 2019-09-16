@@ -19,7 +19,7 @@ along with this program. If not, see <http://www.gnu.org/licenses/>.
 
 */
 
-// $Revision: 10640 $ $Date:: 2019-03-13 #$ $Author: serge $
+// $Revision: 12003 $ $Date:: 2019-09-16 #$ $Author: serge $
 
 #include "handler.h"                // self
 
@@ -34,7 +34,6 @@ along with this program. If not, see <http://www.gnu.org/licenses/>.
 #include "generic_protocol/response_gen.h"              // generic_protocol::create_error_response
 
 #include "session_manager/manager.h" // session_manager::Manager
-#include "password_hasher/login_to_id_converter.h"      // password_hasher::convert_login_to_id
 
 #define MODULENAME      "generic_handler::Handler"
 
@@ -42,19 +41,24 @@ namespace generic_handler
 {
 
 Handler::Handler():
-        sess_man_( nullptr )
+        sess_man_( nullptr ),
+        user_man_( nullptr )
 {
 }
 
 bool Handler::init(
-        session_manager::Manager    * sess_man )
+        session_manager::Manager    * sess_man,
+        user_manager::IIdConverter  * user_man )
 {
+    assert( user_man );
+
     MUTEX_SCOPE_LOCK( mutex_ );
 
     if( !sess_man )
         return false;
 
     sess_man_   = sess_man;
+    user_man_   = user_man;
 
     return true;
 }
@@ -99,9 +103,9 @@ generic_protocol::BackwardMessage* Handler::handle_AuthenticateRequest( session_
 {
     auto & r = dynamic_cast< const generic_protocol::AuthenticateRequest &>( * rr );
 
-    uint32_t id = password_hasher::convert_login_to_id( r.user_login, false );
+    auto id = user_man_->convert_login_to_user_id( r.user_login, false );
 
-    dummy_log_debug( MODULENAME, "handle: AuthenticateRequest: login %s, hash %u", r.user_login.c_str(), id );
+    dummy_log_debug( MODULENAME, "handle: AuthenticateRequest: login %s, id %u", r.user_login.c_str(), id );
 
     std::string session_id;
     std::string error;
@@ -147,7 +151,7 @@ generic_protocol::BackwardMessage* Handler::handle_GetUserIdRequest( session_man
 {
     auto & r = dynamic_cast< const generic_protocol::GetUserIdRequest &>( * rr );
 
-    uint32_t id = password_hasher::convert_login_to_id( r.user_login, false );
+    auto id = user_man_->convert_login_to_user_id( r.user_login, false );
 
     if( id == session_user_id )
         return generic_protocol::create_get_user_id_response( id );
