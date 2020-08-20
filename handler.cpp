@@ -19,7 +19,7 @@ along with this program. If not, see <http://www.gnu.org/licenses/>.
 
 */
 
-// $Revision: 12003 $ $Date:: 2019-09-16 #$ $Author: serge $
+// $Revision: 13528 $ $Date:: 2020-08-20 #$ $Author: serge $
 
 #include "handler.h"                // self
 
@@ -31,7 +31,7 @@ along with this program. If not, see <http://www.gnu.org/licenses/>.
 #include "utils/utils_assert.h"      // ASSERT
 #include "utils/chrono_epoch.h"     // utils::to_epoch
 
-#include "generic_protocol/response_gen.h"              // generic_protocol::create_error_response
+#include "generic_protocol/object_initializer.h"              // generic_protocol::create_ErrorResponse
 
 #include "session_manager/manager.h" // session_manager::Manager
 
@@ -112,10 +112,10 @@ generic_protocol::BackwardMessage* Handler::handle_AuthenticateRequest( session_
 
     if( sess_man_->authenticate( id, r.password, session_id, error ) )
     {
-        return generic_protocol::create_autheticate_response( session_id );
+        return generic_protocol::create_AuthenticateResponse( session_id );
     }
 
-    return generic_protocol::create_error_response( generic_protocol::ErrorResponse::AUTHENTICATION_ERROR, error );
+    return generic_protocol::create_ErrorResponse( generic_protocol::ErrorResponse_type_e::AUTHENTICATION_ERROR, error );
 }
 
 generic_protocol::BackwardMessage* Handler::handle_AuthenticateAltRequest( session_manager::user_id_t /*session_user_id*/, const generic_protocol::ForwardMessage * rr )
@@ -127,10 +127,10 @@ generic_protocol::BackwardMessage* Handler::handle_AuthenticateAltRequest( sessi
 
     if( sess_man_->authenticate( r.user_id, r.password, session_id, error ) )
     {
-        return generic_protocol::create_autheticate_response( session_id );
+        return generic_protocol::create_AuthenticateResponse( session_id );
     }
 
-    return generic_protocol::create_error_response( generic_protocol::ErrorResponse::AUTHENTICATION_ERROR, error );
+    return generic_protocol::create_ErrorResponse( generic_protocol::ErrorResponse_type_e::AUTHENTICATION_ERROR, error );
 }
 
 generic_protocol::BackwardMessage* Handler::handle_CloseSessionRequest( session_manager::user_id_t /*session_user_id*/, const generic_protocol::ForwardMessage * rr )
@@ -141,10 +141,10 @@ generic_protocol::BackwardMessage* Handler::handle_CloseSessionRequest( session_
 
     if( sess_man_->close_session( r.session_id, error ) )
     {
-        return generic_protocol::create_close_session_response();
+        return generic_protocol::create_CloseSessionResponse();
     }
 
-    return generic_protocol::create_error_response( generic_protocol::ErrorResponse::RUNTIME_ERROR, error );
+    return generic_protocol::create_ErrorResponse( generic_protocol::ErrorResponse_type_e::RUNTIME_ERROR, error );
 }
 
 generic_protocol::BackwardMessage* Handler::handle_GetUserIdRequest( session_manager::user_id_t session_user_id, const generic_protocol::ForwardMessage * rr )
@@ -154,9 +154,9 @@ generic_protocol::BackwardMessage* Handler::handle_GetUserIdRequest( session_man
     auto id = user_man_->convert_login_to_user_id( r.user_login, false );
 
     if( id == session_user_id )
-        return generic_protocol::create_get_user_id_response( id );
+        return generic_protocol::create_GetUserIdResponse( id );
 
-    return generic_protocol::create_error_response( generic_protocol::ErrorResponse::NOT_PERMITTED, "no rights to get user ID of another user" );
+    return generic_protocol::create_ErrorResponse( generic_protocol::ErrorResponse_type_e::NOT_PERMITTED, "no rights to get user ID of another user" );
 }
 
 generic_protocol::BackwardMessage* Handler::handle_GetSessionInfoRequest( session_manager::user_id_t session_user_id, const generic_protocol::ForwardMessage * rr )
@@ -169,12 +169,12 @@ generic_protocol::BackwardMessage* Handler::handle_GetSessionInfoRequest( sessio
     {
         generic_protocol::SessionInfo g_si;
 
-        generic_protocol::init( & g_si, si.user_id, utils::to_epoch( si.start_time ), utils::to_epoch( si.expiration_time ) );
+        generic_protocol::initialize( & g_si, si.user_id, utils::to_epoch( si.start_time ), utils::to_epoch( si.expiration_time ) );
 
         return generic_protocol::create_GetSessionInfoResponse( g_si );
     }
 
-    return generic_protocol::create_error_response( generic_protocol::ErrorResponse::AUTHENTICATION_ERROR, "invalid session id or session id has already expired" );
+    return generic_protocol::create_ErrorResponse( generic_protocol::ErrorResponse_type_e::AUTHENTICATION_ERROR, "invalid session id or session id has already expired" );
 }
 
 } // namespace generic_handler
