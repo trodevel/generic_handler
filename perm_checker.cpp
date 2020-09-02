@@ -19,7 +19,7 @@ along with this program. If not, see <http://www.gnu.org/licenses/>.
 
 */
 
-// $Revision: 13449 $ $Date:: 2020-08-11 #$ $Author: serge $
+// $Revision: 13604 $ $Date:: 2020-09-02 #$ $Author: serge $
 
 #include "perm_checker.h"               // self
 
@@ -53,7 +53,7 @@ bool PermChecker::init(
     return true;
 }
 
-bool PermChecker::is_authenticated( session_manager::user_id_t * session_user_id, const generic_protocol::ForwardMessage * req )
+bool PermChecker::is_authenticated( session_manager::user_id_t * session_user_id, const basic_parser::Object * req )
 {
     static const std::set<std::type_index> non_request_based =
     {
@@ -80,11 +80,11 @@ bool PermChecker::is_authenticated( session_manager::user_id_t * session_user_id
     return false;
 }
 
-bool PermChecker::is_allowed( session_manager::user_id_t session_user_id, const generic_protocol::ForwardMessage * req )
+bool PermChecker::is_allowed( session_manager::user_id_t session_user_id, const basic_parser::Object * req )
 {
     typedef PermChecker Type;
 
-    typedef bool (Type::*PPMF)( session_manager::user_id_t session_user_id, const generic_protocol::ForwardMessage * rr );
+    typedef bool (Type::*PPMF)( session_manager::user_id_t session_user_id, const basic_parser::Object * rr );
 
     static const std::unordered_map<std::type_index, PPMF> funcs =
     {
@@ -109,27 +109,27 @@ bool PermChecker::is_allowed( session_manager::user_id_t session_user_id, const 
     return (this->*it->second)( session_user_id, req );
 }
 
-bool PermChecker::is_allowed_AuthenticateRequest( session_manager::user_id_t session_user_id, const generic_protocol::ForwardMessage * rr )
+bool PermChecker::is_allowed_AuthenticateRequest( session_manager::user_id_t session_user_id, const basic_parser::Object * rr )
 {
     return true;
 }
 
-bool PermChecker::is_allowed_AuthenticateAltRequest( session_manager::user_id_t session_user_id, const generic_protocol::ForwardMessage * rr )
+bool PermChecker::is_allowed_AuthenticateAltRequest( session_manager::user_id_t session_user_id, const basic_parser::Object * rr )
 {
     return true;
 }
 
-bool PermChecker::is_allowed_CloseSessionRequest( session_manager::user_id_t session_user_id, const generic_protocol::ForwardMessage * rr )
+bool PermChecker::is_allowed_CloseSessionRequest( session_manager::user_id_t session_user_id, const basic_parser::Object * rr )
 {
     return true;
 }
 
-bool PermChecker::is_allowed_GetUserIdRequest( session_manager::user_id_t session_user_id, const generic_protocol::ForwardMessage * rr )
+bool PermChecker::is_allowed_GetUserIdRequest( session_manager::user_id_t session_user_id, const basic_parser::Object * rr )
 {
     return true;
 }
 
-bool PermChecker::is_allowed_GetSessionInfoRequest( session_manager::user_id_t session_user_id, const generic_protocol::ForwardMessage * rr )
+bool PermChecker::is_allowed_GetSessionInfoRequest( session_manager::user_id_t session_user_id, const basic_parser::Object * rr )
 {
     auto & r = dynamic_cast< const generic_protocol::GetSessionInfoRequest &>( * rr );
 

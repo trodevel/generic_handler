@@ -19,7 +19,7 @@ along with this program. If not, see <http://www.gnu.org/licenses/>.
 
 */
 
-// $Revision: 13528 $ $Date:: 2020-08-20 #$ $Author: serge $
+// $Revision: 13606 $ $Date:: 2020-09-02 #$ $Author: serge $
 
 #include "handler.h"                // self
 
@@ -64,13 +64,13 @@ bool Handler::init(
 }
 
 
-generic_protocol::BackwardMessage* Handler::handle( session_manager::user_id_t session_user_id, const generic_protocol::ForwardMessage * req )
+generic_protocol::BackwardMessage* Handler::handle( session_manager::user_id_t session_user_id, const basic_parser::Object * req )
 {
     MUTEX_SCOPE_LOCK( mutex_ );
 
     typedef Handler Type;
 
-    typedef generic_protocol::BackwardMessage* (Type::*PPMF)( session_manager::user_id_t session_user_id, const generic_protocol::ForwardMessage * r );
+    typedef generic_protocol::BackwardMessage* (Type::*PPMF)( session_manager::user_id_t session_user_id, const basic_parser::Object * r );
 
 #define HANDLER_MAP_ENTRY(_v)       { typeid( generic_protocol::_v ),        & Type::handle_##_v }
 
@@ -99,7 +99,7 @@ generic_protocol::BackwardMessage* Handler::handle( session_manager::user_id_t s
     return (this->*it->second)( session_user_id, req );
 }
 
-generic_protocol::BackwardMessage* Handler::handle_AuthenticateRequest( session_manager::user_id_t /*session_user_id*/, const generic_protocol::ForwardMessage * rr )
+generic_protocol::BackwardMessage* Handler::handle_AuthenticateRequest( session_manager::user_id_t /*session_user_id*/, const basic_parser::Object * rr )
 {
     auto & r = dynamic_cast< const generic_protocol::AuthenticateRequest &>( * rr );
 
@@ -118,7 +118,7 @@ generic_protocol::BackwardMessage* Handler::handle_AuthenticateRequest( session_
     return generic_protocol::create_ErrorResponse( generic_protocol::ErrorResponse_type_e::AUTHENTICATION_ERROR, error );
 }
 
-generic_protocol::BackwardMessage* Handler::handle_AuthenticateAltRequest( session_manager::user_id_t /*session_user_id*/, const generic_protocol::ForwardMessage * rr )
+generic_protocol::BackwardMessage* Handler::handle_AuthenticateAltRequest( session_manager::user_id_t /*session_user_id*/, const basic_parser::Object * rr )
 {
     auto & r = dynamic_cast< const generic_protocol::AuthenticateAltRequest &>( * rr );
 
@@ -133,7 +133,7 @@ generic_protocol::BackwardMessage* Handler::handle_AuthenticateAltRequest( sessi
     return generic_protocol::create_ErrorResponse( generic_protocol::ErrorResponse_type_e::AUTHENTICATION_ERROR, error );
 }
 
-generic_protocol::BackwardMessage* Handler::handle_CloseSessionRequest( session_manager::user_id_t /*session_user_id*/, const generic_protocol::ForwardMessage * rr )
+generic_protocol::BackwardMessage* Handler::handle_CloseSessionRequest( session_manager::user_id_t /*session_user_id*/, const basic_parser::Object * rr )
 {
     auto & r = dynamic_cast< const generic_protocol::CloseSessionRequest &>( * rr );
 
@@ -147,7 +147,7 @@ generic_protocol::BackwardMessage* Handler::handle_CloseSessionRequest( session_
     return generic_protocol::create_ErrorResponse( generic_protocol::ErrorResponse_type_e::RUNTIME_ERROR, error );
 }
 
-generic_protocol::BackwardMessage* Handler::handle_GetUserIdRequest( session_manager::user_id_t session_user_id, const generic_protocol::ForwardMessage * rr )
+generic_protocol::BackwardMessage* Handler::handle_GetUserIdRequest( session_manager::user_id_t session_user_id, const basic_parser::Object * rr )
 {
     auto & r = dynamic_cast< const generic_protocol::GetUserIdRequest &>( * rr );
 
@@ -159,7 +159,7 @@ generic_protocol::BackwardMessage* Handler::handle_GetUserIdRequest( session_man
     return generic_protocol::create_ErrorResponse( generic_protocol::ErrorResponse_type_e::NOT_PERMITTED, "no rights to get user ID of another user" );
 }
 
-generic_protocol::BackwardMessage* Handler::handle_GetSessionInfoRequest( session_manager::user_id_t session_user_id, const generic_protocol::ForwardMessage * rr )
+generic_protocol::BackwardMessage* Handler::handle_GetSessionInfoRequest( session_manager::user_id_t session_user_id, const basic_parser::Object * rr )
 {
     auto & r = dynamic_cast< const generic_protocol::GetSessionInfoRequest &>( * rr );
 

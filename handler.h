@@ -19,7 +19,7 @@ along with this program. If not, see <http://www.gnu.org/licenses/>.
 
 */
 
-// $Revision: 12061 $ $Date:: 2019-09-27 #$ $Author: serge $
+// $Revision: 13606 $ $Date:: 2020-09-02 #$ $Author: serge $
 
 #ifndef GENERIC_HANDLER_HANDLER_H
 #define GENERIC_HANDLER_HANDLER_H
@@ -28,6 +28,7 @@ along with this program. If not, see <http://www.gnu.org/licenses/>.
 
 #include "session_manager/types.h"      // session_manager::user_id_t
 #include "user_manager/i_id_converter.h"    // user_manager::IIdConverter
+#include "basic_parser/object.h"
 
 namespace generic_protocol
 {
@@ -53,15 +54,15 @@ public:
             session_manager::Manager    * sess_man,
             user_manager::IIdConverter  * user_man );
 
-    generic_protocol::BackwardMessage* handle( session_manager::user_id_t session_user_id, const generic_protocol::ForwardMessage * r );
+    generic_protocol::BackwardMessage* handle( session_manager::user_id_t session_user_id, const basic_parser::Object * r );
 
 private:
 
-    generic_protocol::BackwardMessage* handle_AuthenticateRequest( session_manager::user_id_t session_user_id, const generic_protocol::ForwardMessage * r );
-    generic_protocol::BackwardMessage* handle_AuthenticateAltRequest( session_manager::user_id_t session_user_id, const generic_protocol::ForwardMessage * r );
-    generic_protocol::BackwardMessage* handle_CloseSessionRequest( session_manager::user_id_t session_user_id, const generic_protocol::ForwardMessage * r );
-    generic_protocol::BackwardMessage* handle_GetUserIdRequest( session_manager::user_id_t session_user_id, const generic_protocol::ForwardMessage * r );
-    generic_protocol::BackwardMessage* handle_GetSessionInfoRequest( session_manager::user_id_t session_user_id, const generic_protocol::ForwardMessage * r );
+    generic_protocol::BackwardMessage* handle_AuthenticateRequest( session_manager::user_id_t session_user_id, const basic_parser::Object * r );
+    generic_protocol::BackwardMessage* handle_AuthenticateAltRequest( session_manager::user_id_t session_user_id, const basic_parser::Object * r );
+    generic_protocol::BackwardMessage* handle_CloseSessionRequest( session_manager::user_id_t session_user_id, const basic_parser::Object * r );
+    generic_protocol::BackwardMessage* handle_GetUserIdRequest( session_manager::user_id_t session_user_id, const basic_parser::Object * r );
+    generic_protocol::BackwardMessage* handle_GetSessionInfoRequest( session_manager::user_id_t session_user_id, const basic_parser::Object * r );
 
 private:
     mutable std::mutex          mutex_;
