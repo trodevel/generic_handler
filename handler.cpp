@@ -19,7 +19,7 @@ along with this program. If not, see <http://www.gnu.org/licenses/>.
 
 */
 
-// $Revision: 13606 $ $Date:: 2020-09-02 #$ $Author: serge $
+// $Revision: 13622 $ $Date:: 2020-09-03 #$ $Author: serge $
 
 #include "handler.h"                // self
 
@@ -115,7 +115,7 @@ generic_protocol::BackwardMessage* Handler::handle_AuthenticateRequest( session_
         return generic_protocol::create_AuthenticateResponse( session_id );
     }
 
-    return generic_protocol::create_ErrorResponse( generic_protocol::ErrorResponse_type_e::AUTHENTICATION_ERROR, error );
+    return generic_protocol::create_ErrorResponse( generic_protocol::ErrorResponse_type_e::RUNTIME_ERROR, error );
 }
 
 generic_protocol::BackwardMessage* Handler::handle_AuthenticateAltRequest( session_manager::user_id_t /*session_user_id*/, const basic_parser::Object * rr )
@@ -130,7 +130,7 @@ generic_protocol::BackwardMessage* Handler::handle_AuthenticateAltRequest( sessi
         return generic_protocol::create_AuthenticateResponse( session_id );
     }
 
-    return generic_protocol::create_ErrorResponse( generic_protocol::ErrorResponse_type_e::AUTHENTICATION_ERROR, error );
+    return generic_protocol::create_ErrorResponse( generic_protocol::ErrorResponse_type_e::RUNTIME_ERROR, error );
 }
 
 generic_protocol::BackwardMessage* Handler::handle_CloseSessionRequest( session_manager::user_id_t /*session_user_id*/, const basic_parser::Object * rr )
@@ -174,7 +174,7 @@ generic_protocol::BackwardMessage* Handler::handle_GetSessionInfoRequest( sessio
         return generic_protocol::create_GetSessionInfoResponse( g_si );
     }
 
-    return generic_protocol::create_ErrorResponse( generic_protocol::ErrorResponse_type_e::AUTHENTICATION_ERROR, "invalid session id or session id has already expired" );
+    return generic_protocol::create_ErrorResponse( generic_protocol::ErrorResponse_type_e::INVALID_ARGUMENT, "invalid session id or session id has already expired" );
 }
 
 } // namespace generic_handler
