@@ -19,16 +19,15 @@ along with this program. If not, see <http://www.gnu.org/licenses/>.
 
 */
 
-// $Revision: 13604 $ $Date:: 2020-09-02 #$ $Author: serge $
+// $Revision: 13922 $ $Date:: 2020-10-03 #$ $Author: serge $
 
+#include "session_manager/session_manager.h"            // session_manager::Manager
 #include "perm_checker.h"               // self
 
 #include <typeindex>                    // std::type_index
 #include <unordered_map>
 
 #include "generic_protocol/protocol.h"  // generic_protocol::
-#include "session_manager/manager.h"            // session_manager::Manager
-
 #include "utils/dummy_logger.h"      // dummy_log
 #include "utils/utils_assert.h"      // ASSERT
 
@@ -43,7 +42,7 @@ PermChecker::PermChecker():
 }
 
 bool PermChecker::init(
-        session_manager::Manager            * sess_man )
+        session_manager::SessionManager            * sess_man )
 {
     if( !sess_man )
         return false;

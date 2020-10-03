@@ -19,7 +19,7 @@ along with this program. If not, see <http://www.gnu.org/licenses/>.
 
 */
 
-// $Revision: 13604 $ $Date:: 2020-09-02 #$ $Author: serge $
+// $Revision: 13922 $ $Date:: 2020-10-03 #$ $Author: serge $
 
 #ifndef GENERIC_HANDLER_PERM_CHECKER_H
 #define GENERIC_HANDLER_PERM_CHECKER_H
@@ -35,7 +35,7 @@ class BackwardMessage;
 
 namespace session_manager
 {
-class Manager;
+class SessionManager;
 }
 
 namespace generic_handler
@@ -48,7 +48,7 @@ public:
     PermChecker();
 
     bool init(
-            session_manager::Manager            * sess_man );
+            session_manager::SessionManager            * sess_man );
 
     bool is_authenticated( session_manager::user_id_t * session_user_id, const basic_parser::Object * r );
     bool is_allowed( session_manager::user_id_t session_user_id, const basic_parser::Object * r );
@@ -61,7 +61,7 @@ private:
     bool is_allowed_GetSessionInfoRequest( session_manager::user_id_t session_user_id, const basic_parser::Object * r );
 
 private:
-    session_manager::Manager            * sess_man_;
+    session_manager::SessionManager            * sess_man_;
 
 };
 

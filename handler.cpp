@@ -19,8 +19,9 @@ along with this program. If not, see <http://www.gnu.org/licenses/>.
 
 */
 
-// $Revision: 13622 $ $Date:: 2020-09-03 #$ $Author: serge $
+// $Revision: 13922 $ $Date:: 2020-10-03 #$ $Author: serge $
 
+#include "session_manager/session_manager.h" // session_manager::Manager
 #include "handler.h"                // self
 
 #include <typeindex>                // std::type_index
@@ -33,7 +34,6 @@ along with this program. If not, see <http://www.gnu.org/licenses/>.
 
 #include "generic_protocol/object_initializer.h"              // generic_protocol::create_ErrorResponse
 
-#include "session_manager/manager.h" // session_manager::Manager
 
 #define MODULENAME      "generic_handler::Handler"
 
@@ -47,7 +47,7 @@ Handler::Handler():
 }
 
 bool Handler::init(
-        session_manager::Manager    * sess_man,
+        session_manager::SessionManager    * sess_man,
         user_manager::IIdConverter  * user_man )
 {
     assert( user_man );
@@ -163,7 +163,7 @@ generic_protocol::BackwardMessage* Handler::handle_GetSessionInfoRequest( sessio
 {
     auto & r = dynamic_cast< const generic_protocol::GetSessionInfoRequest &>( * rr );
 
-    session_manager::Manager::SessionInfo si;
+    session_manager::SessionManager::SessionInfo si;
 
     if( sess_man_->get_session_info( & si, r.id ) )
     {

@@ -19,7 +19,7 @@ along with this program. If not, see <http://www.gnu.org/licenses/>.
 
 */
 
-// $Revision: 13606 $ $Date:: 2020-09-02 #$ $Author: serge $
+// $Revision: 13922 $ $Date:: 2020-10-03 #$ $Author: serge $
 
 #ifndef GENERIC_HANDLER_HANDLER_H
 #define GENERIC_HANDLER_HANDLER_H
@@ -38,7 +38,7 @@ class BackwardMessage;
 
 namespace session_manager
 {
-class Manager;
+class SessionManager;
 }
 
 namespace generic_handler
@@ -51,7 +51,7 @@ public:
     Handler();
 
     bool init(
-            session_manager::Manager    * sess_man,
+            session_manager::SessionManager    * sess_man,
             user_manager::IIdConverter  * user_man );
 
     generic_protocol::BackwardMessage* handle( session_manager::user_id_t session_user_id, const basic_parser::Object * r );
@@ -67,7 +67,7 @@ private:
 private:
     mutable std::mutex          mutex_;
 
-    session_manager::Manager    * sess_man_;
+    session_manager::SessionManager    * sess_man_;
     user_manager::IIdConverter  * user_man_;
 };
 
