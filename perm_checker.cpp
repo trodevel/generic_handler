@@ -19,9 +19,9 @@ along with this program. If not, see <http://www.gnu.org/licenses/>.
 
 */
 
-// $Revision: 13922 $ $Date:: 2020-10-03 #$ $Author: serge $
+// $Revision: 13926 $ $Date:: 2020-10-03 #$ $Author: serge $
 
-#include "session_manager/session_manager.h"            // session_manager::Manager
+#include "session_manager/session_manager.h"       // session_manager::SessionManager
 #include "perm_checker.h"               // self
 
 #include <typeindex>                    // std::type_index
